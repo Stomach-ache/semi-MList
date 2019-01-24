@@ -5,6 +5,7 @@ import os
 import base64
 #from flask_bootstrap import Bootstrap
 import cv2
+import pickle
 
 app = Flask(__name__)
 #Bootstrap(app)
@@ -22,17 +23,11 @@ def indexpage():
 
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'JPG', 'PNG', 'bmp', 'pdf'])
- 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def return_img_stream(img_local_path):
-    """
-    工具函数:
-    获取本地图片流
-    :param img_local_path:文件单张图片的本地绝对路径
-    :return: 图片流
-    """
     img_stream = ''
     with open(img_local_path, 'rb') as img_f:
         img_stream = img_f.read()
@@ -44,39 +39,47 @@ def upload():
     file_dir = os.path.join(basedir, app.config['UPLOAD_FOLDER'])
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
-    f = request.files['file']  # 从表单的file字段获取文件，file为该表单的name值
+    f = request.files['file']
 
-    if f and allowed_file(f.filename):  # 判断是否是允许上传的文件类型
+    if f and allowed_file(f.filename):
         fname = secure_filename(f.filename)
         print (fname)
-        ext = fname.rsplit('.',1)[1]  # 获取文件后缀
+        ext = fname.rsplit('.',1)[1]
         unix_time = int(time.time())
-        # new_filename = str(unix_time)+'.'+ext  # 修改了上传的文件名
-        #new_filename = '12'+'.'+ext  # 修改了上传的文件名
         save_path = os.path.join(file_dir,fname)
         if os.path.exists(basedir + 'static/test.jpg'):
             os.remove(basedir + 'static/test.jpg')
-        f.save(os.path.join(basedir, 'static/', 'test.jpg'))  #保存文件到upload目录
+        f.save(os.path.join(basedir, 'static/', 'test.jpg'))
         #img = cv2.imread(fname)
         #cv2.imwrite(save_path, img)
         #token = base64.encode(fname)
         #print (token)
-        #<img src="{{ url_for('static', filename= './images/test.jpg') }}" width="400" height="400" alt="你的图片被外星人劫持了～～"/>
         #img_stream = return_img_stream(save_path)
         #response = make_response(image_data)
         #return response
         #img = cv2.imread(fname)
         #cv2.imwrite(save_path, img)
-        
+
         return render_template('showPic.html', fname = fname)
     else:
         return jsonify({"errno":1001, "errmsg":u"failed"})
 
 
+
+# load the isolation forest model
+isolationForest = pickle.load(open('./isolationForest_model.sav', 'rb'))
+
+
 @app.route('/predict', methods=['GET'],strict_slashes=False)
 def predict():
+    # fea, lbl = deep_model_predict('./static/test.jpg')
     val = 1
-    return render_template('predictValue.html', pred_val = val)
+    # y = isolationForest.predict(fea)
+    # if y == 0:
+    #    msg = "Yeap! We\'ve got a new whale"
+    # else:
+    #    msg = 'The ID of this whale is: ' + str(lbl)
+    return render_template('predictValue.html', pred_val = msg)
 
 @app.route('/')
 def hello_world():
