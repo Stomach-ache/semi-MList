@@ -10,6 +10,8 @@ from config import *
 import tensorflow as tf
 import cv2
 
+fcnmodel_path = './fcn-50.ckpt-0'
+
 def crop(img):  #########
     #print('crop', img.shape)
     #image = Image.fromarray(img)
