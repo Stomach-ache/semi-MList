@@ -1,0 +1,6 @@
+model_checkpoint_path: "fcn-50.ckpt-0"
+all_model_checkpoint_paths: "fcn-10.ckpt-0"
+all_model_checkpoint_paths: "fcn-20.ckpt-0"
+all_model_checkpoint_paths: "fcn-30.ckpt-0"
+all_model_checkpoint_paths: "fcn-40.ckpt-0"
+all_model_checkpoint_paths: "fcn-50.ckpt-0"
